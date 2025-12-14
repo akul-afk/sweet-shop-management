@@ -81,3 +81,48 @@ def test_update_sweet(client):
 
     assert update.status_code == 200
     assert update.json()["price"] == 30.0
+def test_purchase_sweet_decreases_quantity(client):
+    headers = auth_header(client)
+
+    create = client.post(
+        "/api/sweets",
+        headers=headers,
+        json={
+            "name": "Ladoo",
+            "category": "Indian",
+            "price": 10.0,
+            "quantity": 5
+        }
+    )
+    sweet_id = create.json()["id"]
+
+    purchase = client.post(
+        f"/api/sweets/{sweet_id}/purchase",
+        headers=headers
+    )
+
+    assert purchase.status_code == 200
+    assert purchase.json()["quantity"] == 4
+
+
+def test_delete_sweet_requires_admin(client):
+    headers = auth_header(client)
+
+    create = client.post(
+        "/api/sweets",
+        headers=headers,
+        json={
+            "name": "Halwa",
+            "category": "Indian",
+            "price": 12.0,
+            "quantity": 10
+        }
+    )
+    sweet_id = create.json()["id"]
+
+    delete = client.delete(
+        f"/api/sweets/{sweet_id}",
+        headers=headers
+    )
+
+    assert delete.status_code == 403
