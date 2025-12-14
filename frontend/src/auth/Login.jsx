@@ -1,39 +1,42 @@
 import { useState } from "react";
+import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ STATE DECLARATIONS (THIS WAS MISSING)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
 
   const submit = async (e) => {
     e.preventDefault();
-    await login(email, password);
-    navigate("/");
+    await login(email, password, role);
+    navigate("/shop");
   };
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} className="auth-form">
       <h2>Login</h2>
 
-      <input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <div className="role-toggle">
+        <button type="button" onClick={() => setRole("user")}>
+          User
+        </button>
+        <button type="button" onClick={() => setRole("admin")}>
+          Admin
+        </button>
+      </div>
 
+      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
       <input
         type="password"
         placeholder="Password"
-        value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button type="submit">Login</button>
+      <button className="btn">Login</button>
     </form>
   );
 }

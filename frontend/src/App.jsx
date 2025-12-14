@@ -1,19 +1,40 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./auth/AuthContext";
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+
 import Login from "./auth/Login";
 import Register from "./auth/Register";
-import SweetList from "./sweets/SweetList";
+import Shop from "./pages/Shop";
+import Admin from "./pages/Admin";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<SweetList />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Shop />} />
+        <Route
+          path="/shop"
+          element={
+            <ProtectedRoute>
+              <Shop />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute adminOnly>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </>
   );
 }
