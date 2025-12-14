@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api import auth, sweets  
 from app.db.database import engine
 from app.db.base import Base  # 👈 IMPORTANT (loads models)
 
@@ -16,3 +17,6 @@ app.add_middleware(
 
 # ✅ CREATE TABLES
 Base.metadata.create_all(bind=engine)
+
+app.include_router(auth.router)
+app.include_router(sweets.router)
