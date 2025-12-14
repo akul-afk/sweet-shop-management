@@ -50,3 +50,11 @@ def login(payload: dict, db: Session = Depends(get_db)):
         "access_token": access_token,
         "token_type": "bearer"
     }
+from app.core.deps import get_current_user
+
+@router.get("/me")
+def read_current_user(current_user=Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email
+    }

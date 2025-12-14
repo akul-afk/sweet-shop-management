@@ -35,3 +35,26 @@ def test_user_can_login(client):
     assert response.status_code == 200
     assert "access_token" in response.json()
     assert response.json()["token_type"] == "bearer"
+def test_protected_route_requires_auth(client):
+    response = client.get("/api/auth/me")
+    assert response.status_code == 401
+def test_protected_route_with_token(client):
+    client.post(
+        "/api/auth/register",
+        json={"email": "me@example.com", "password": "test"}
+    )
+
+    login = client.post(
+        "/api/auth/login",
+        json={"email": "me@example.com", "password": "test"}
+    )
+
+    token = login.json()["access_token"]
+
+    response = client.get(
+        "/api/auth/me",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["email"] == "me@example.com"
