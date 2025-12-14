@@ -1,3 +1,5 @@
-from sqlalchemy.orm import declarative_base
+from app.db.database import Base
 
-Base = declarative_base()
+# 🔥 THIS FILE EXISTS ONLY TO REGISTER MODELS
+import app.models.user
+import app.models.sweet

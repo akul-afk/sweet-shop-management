@@ -1,25 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, sweets
+from app.db.database import engine
+from app.db.base import Base  # 👈 IMPORTANT (loads models)
 
-app = FastAPI(title="Sweet Shop API")
+app = FastAPI()
 
-# ✅ CORS CONFIG
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(sweets.router)
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
+# ✅ CREATE TABLES
+Base.metadata.create_all(bind=engine)
