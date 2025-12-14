@@ -35,3 +35,49 @@ def test_create_and_list_sweets(client):
     assert list_res.status_code == 200
     assert len(list_res.json()) == 1
     assert list_res.json()[0]["name"] == "Gulab Jamun"
+def test_search_sweets(client):
+    headers = auth_header(client)
+
+    client.post(
+        "/api/sweets",
+        headers=headers,
+        json={
+            "name": "Rasgulla",
+            "category": "Indian",
+            "price": 15.0,
+            "quantity": 30
+        }
+    )
+
+    res = client.get(
+        "/api/sweets/search?name=ras",
+        headers=headers
+    )
+
+    assert res.status_code == 200
+    assert len(res.json()) == 1
+    assert res.json()[0]["name"] == "Rasgulla"
+def test_update_sweet(client):
+    headers = auth_header(client)
+
+    create = client.post(
+        "/api/sweets",
+        headers=headers,
+        json={
+            "name": "Barfi",
+            "category": "Indian",
+            "price": 25.0,
+            "quantity": 40
+        }
+    )
+
+    sweet_id = create.json()["id"]
+
+    update = client.put(
+        f"/api/sweets/{sweet_id}",
+        headers=headers,
+        json={"price": 30.0}
+    )
+
+    assert update.status_code == 200
+    assert update.json()["price"] == 30.0
