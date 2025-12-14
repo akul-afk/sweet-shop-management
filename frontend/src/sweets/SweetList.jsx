@@ -1,11 +1,29 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 
 export default function SweetList() {
   const [sweets, setSweets] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/api/sweets").then((res) => setSweets(res.data));
+    const token = localStorage.getItem("token");
+
+    // 🔒 If not logged in, redirect immediately
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    // ✅ Only call API if token exists
+    api.get("/api/sweets")
+      .then((res) => setSweets(res.data))
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      });
   }, []);
 
   const purchase = async (id) => {
